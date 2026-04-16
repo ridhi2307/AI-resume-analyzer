@@ -21,19 +21,41 @@ app.get("/", (req, res) => {
 app.post("/upload", upload.single("resume"), async (req, res) => {
   try {
     const filePath = req.file.path;
+    const jobDescription = req.body.jobDescription || "";
 
     const dataBuffer = fs.readFileSync(filePath);
     const pdfData = await pdfParse(dataBuffer);
 
+    const resumeText = pdfData.text;
+
+    // Calculate match score
+    const score = calculateMatch(resumeText, jobDescription);
+
     res.json({
-      message: "File processed successfully",
-      text: pdfData.text.substring(0, 500), // show first 500 chars
+      message: "Analysis complete",
+      matchScore: score + "%",
+      preview: resumeText.substring(0, 200),
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error processing file" });
   }
 });
+
+function calculateMatch(resume, job) {
+  const resumeWords = resume.toLowerCase().split(/\W+/);
+  const jobWords = job.toLowerCase().split(/\W+/);
+
+  let matchCount = 0;
+
+  jobWords.forEach((word) => {
+    if (resumeWords.includes(word)) {
+      matchCount++;
+    }
+  });
+
+  return Math.floor((matchCount / jobWords.length) * 100);
+}
 
 app.listen(5000, () => {
   console.log("Server running on port 5000");
