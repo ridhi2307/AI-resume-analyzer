@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
@@ -43,18 +44,46 @@ app.post("/upload", upload.single("resume"), async (req, res) => {
 });
 
 function calculateMatch(resume, job) {
-  const resumeWords = resume.toLowerCase().split(/\W+/);
-  const jobWords = job.toLowerCase().split(/\W+/);
+  const stopWords = ["the", "and", "is", "in", "of", "to", "a", "for", "with"];
 
-  let matchCount = 0;
+  const synonyms = {
+    ml: "machinelearning",
+    machine: "machinelearning",
+    learning: "machinelearning",
+    ai: "artificialintelligence",
+    js: "javascript",
+  };
+
+  const importantSkills = [
+    "python",
+    "machinelearning",
+    "artificialintelligence",
+    "react",
+  ];
+
+  function preprocess(text) {
+    return text
+      .toLowerCase()
+      .replace(/[^\w\s]/g, "")
+      .split(/\s+/)
+      .map((word) => synonyms[word] || word)
+      .filter((word) => !stopWords.includes(word));
+  }
+
+  const resumeWords = preprocess(resume);
+  const jobWords = preprocess(job);
+
+  const resumeSet = new Set(resumeWords);
+
+  let matchScore = 0;
 
   jobWords.forEach((word) => {
-    if (resumeWords.includes(word)) {
-      matchCount++;
+    if (resumeSet.has(word)) {
+      matchScore += importantSkills.includes(word) ? 2 : 1;
     }
   });
 
-  return Math.floor((matchCount / jobWords.length) * 100);
+  return Math.floor((matchScore / jobWords.length) * 100);
 }
 
 app.listen(5000, () => {
