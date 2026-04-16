@@ -82,6 +82,7 @@ function calculateMatch(resume, job) {
       matchScore += importantSkills.includes(word) ? 2 : 1;
     }
   });
+  if (jobWords.length === 0) return 0;
 
   return Math.floor((matchScore / jobWords.length) * 100);
 }
