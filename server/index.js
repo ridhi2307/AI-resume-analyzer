@@ -83,7 +83,8 @@ function calculateMatch(resume, job) {
     }
   });
   if (jobWords.length === 0) return 0;
-
+  console.log("Resume Words:", resumeWords);
+  console.log("Job Words:", jobWords);
   return Math.floor((matchScore / jobWords.length) * 100);
 }
 
