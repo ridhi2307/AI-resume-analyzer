@@ -60,22 +60,29 @@ function calculateMatch(resume, job) {
     "javascript",
   ];
 
-  let matchCount = 0;
+  const normalizeText = (text) =>
+    text.toLowerCase().replace(/\s+/g, "").replace(/[^\w]/g, "");
+
+  const cleanResume = normalizeText(resume);
+
+  let matchScore = 0;
 
   importantSkills.forEach((skill) => {
-    if (resumeText.includes(skill)) {
-      matchCount++;
+    const cleanSkill = normalizeText(skill);
+
+    if (cleanResume.includes(cleanSkill)) {
+      matchScore++;
     }
   });
 
-  const score = (matchCount / importantSkills.length) * 100;
+  const score = (matchScore / importantSkills.length) * 100;
 
   return Math.round(score);
 }
 
-const testResume = "I have experience in Python, React and Machine Learning";
+//const testResume = "I have experience in Python, React and Machine Learning";
 
-console.log("Test Score:", calculateMatch(testResume, ""));
+//console.log("Test Score:", calculateMatch(testResume, ""));
 
 app.listen(5000, () => {
   console.log("Server running on port 5000");
