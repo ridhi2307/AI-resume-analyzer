@@ -27,15 +27,22 @@ app.post("/upload", upload.single("resume"), async (req, res) => {
     const dataBuffer = fs.readFileSync(filePath);
     const pdfData = await pdfParse(dataBuffer);
 
-    const resumeText = pdfData.text;
+    const resumeFromFile = pdfData.text;
+    const resumeFromText = req.body.text; // 👈 textarea input
+
+    // ✅ choose input (priority: typed text)
+    const finalResume =
+      resumeFromText && resumeFromText.trim() !== ""
+        ? resumeFromText
+        : resumeFromFile;
 
     // Calculate match score
-    const score = calculateMatch(resumeText, jobDescription);
+    const score = calculateMatch(finalResume, jobDescription);
 
     res.json({
       message: "Analysis complete",
       matchScore: score + "%",
-      preview: resumeText.substring(0, 200),
+      preview: finalResume.substring(0, 200),
     });
   } catch (error) {
     console.error(error);
