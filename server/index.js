@@ -35,6 +35,8 @@ app.post("/upload", upload.single("resume"), async (req, res) => {
       resumeFromText && resumeFromText.trim() !== ""
         ? resumeFromText
         : resumeFromFile;
+    console.log("TEXT INPUT 👉", req.body.text);
+    console.log("FINAL RESUME 👉", finalResume);
 
     // Calculate match score
     const score = calculateMatch(finalResume, jobDescription);
