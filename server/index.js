@@ -60,30 +60,29 @@ function calculateMatch(resume, job) {
     "javascript",
   ];
 
-  const normalizeText = (text) =>
-  text.toLowerCase().replace(/[^\w\s]/g, "");
+  const normalizeText = (text) => text.toLowerCase().replace(/[^\w\s]/g, "");
 
-const resumeWords = normalizeText(resume).split(/\s+/);
+  const resumeWords = normalizeText(resume).split(/\s+/);
 
-// convert to set for fast lookup
-const wordSet = new Set(resumeWords);
+  // convert to set for fast lookup
+  const wordSet = new Set(resumeWords);
 
-let matchScore = 0;
+  let matchScore = 0;
 
-importantSkills.forEach((skill) => {
-  const skillWords = normalizeText(skill).split(" ");
+  importantSkills.forEach((skill) => {
+    const skillWords = normalizeText(skill).split(" ");
 
-  // check if ALL words in skill exist
-  const isMatch = skillWords.every(word => wordSet.has(word));
+    // check if ALL words in skill exist
+    const isMatch = skillWords.every((word) => wordSet.has(word));
 
-  if (isMatch) {
-    matchScore++;
-  }
-});
+    if (isMatch) {
+      matchScore++;
+    }
+  });
 
-const score = (matchScore / importantSkills.length) * 100;
-return Math.round(score);
-
+  const score = (matchScore / importantSkills.length) * 100;
+  return Math.round(score);
+}
 //const testResume = "I have experience in Python, React and Machine Learning";
 
 //console.log("Test Score:", calculateMatch(testResume, ""));
