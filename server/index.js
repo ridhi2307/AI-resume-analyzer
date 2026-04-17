@@ -73,6 +73,10 @@ function calculateMatch(resume, job) {
   return Math.round(score);
 }
 
+const testResume = "I have experience in Python, React and Machine Learning";
+
+console.log("Test Score:", calculateMatch(testResume, ""));
+
 app.listen(5000, () => {
   console.log("Server running on port 5000");
 });
