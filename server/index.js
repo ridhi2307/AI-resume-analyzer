@@ -48,8 +48,6 @@ function calculateMatch(resume, job) {
 
   const synonyms = {
     ml: "machinelearning",
-    machine: "machinelearning",
-    learning: "machinelearning",
     ai: "artificialintelligence",
     js: "javascript",
   };
