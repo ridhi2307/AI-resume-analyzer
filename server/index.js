@@ -44,6 +44,7 @@ app.post("/upload", upload.single("resume"), async (req, res) => {
 });
 
 function calculateMatch(resume, job) {
+  console.log("RESUME TEXT 👉", resume);
   const importantSkills = [
     "python",
     "machine learning",
@@ -52,22 +53,33 @@ function calculateMatch(resume, job) {
     "javascript",
   ];
 
-  if (!resume || resume.length === 0) {
+  if (!resume || resume.trim().length === 0) {
     return 0;
   }
 
   const normalize = (text) => text.toLowerCase().replace(/[^\w\s]/g, "");
 
   const resumeText = normalize(resume);
+  const resumeWords = resumeText.split(/\s+/);
+
+  // 🚨 Detect gibberish (very important)
+  if (resumeWords.length < 3) {
+    return 0;
+  }
 
   let matchScore = 0;
 
   importantSkills.forEach((skill) => {
     const cleanSkill = normalize(skill);
 
-    const regex = new RegExp(`\\b${cleanSkill}\\b`, "i");
+    // ✅ 1. exact phrase match
+    const phraseMatch = resumeText.includes(cleanSkill);
 
-    if (regex.test(resumeText)) {
+    // ✅ 2. word-based match
+    const skillWords = cleanSkill.split(" ");
+    const wordMatch = skillWords.every((word) => resumeWords.includes(word));
+
+    if (phraseMatch || wordMatch) {
       matchScore++;
     }
   });
