@@ -44,14 +44,6 @@ app.post("/upload", upload.single("resume"), async (req, res) => {
 });
 
 function calculateMatch(resume, job) {
-  if (!resume || resume.length === 0) {
-    return 0; // prevent empty case
-  }
-
-  const normalize = (text) => text.toLowerCase().replace(/[^\w\s]/g, "");
-
-  const resumeText = normalize(resume);
-
   const importantSkills = [
     "python",
     "machine learning",
@@ -60,27 +52,28 @@ function calculateMatch(resume, job) {
     "javascript",
   ];
 
-  const normalizeText = (text) => text.toLowerCase().replace(/[^\w\s]/g, "");
+  if (!resume || resume.length === 0) {
+    return 0;
+  }
 
-  const resumeWords = normalizeText(resume).split(/\s+/);
+  const normalize = (text) => text.toLowerCase().replace(/[^\w\s]/g, "");
 
-  // convert to set for fast lookup
-  const wordSet = new Set(resumeWords);
+  const resumeText = normalize(resume);
 
   let matchScore = 0;
 
   importantSkills.forEach((skill) => {
-    const skillWords = normalizeText(skill).split(" ");
+    const cleanSkill = normalize(skill);
 
-    // check if ALL words in skill exist
-    const isMatch = skillWords.every((word) => wordSet.has(word));
+    const regex = new RegExp(`\\b${cleanSkill}\\b`, "i");
 
-    if (isMatch) {
+    if (regex.test(resumeText)) {
       matchScore++;
     }
   });
 
   const score = (matchScore / importantSkills.length) * 100;
+
   return Math.round(score);
 }
 //const testResume = "I have experience in Python, React and Machine Learning";
