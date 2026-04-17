@@ -44,46 +44,33 @@ app.post("/upload", upload.single("resume"), async (req, res) => {
 });
 
 function calculateMatch(resume, job) {
-  const stopWords = ["the", "and", "is", "in", "of", "to", "a", "for", "with"];
+  if (!resume || resume.length === 0) {
+    return 0; // prevent empty case
+  }
 
-  const synonyms = {
-    ml: "machinelearning",
-    ai: "artificialintelligence",
-    js: "javascript",
-  };
+  const normalize = (text) => text.toLowerCase().replace(/[^\w\s]/g, "");
+
+  const resumeText = normalize(resume);
 
   const importantSkills = [
     "python",
-    "machinelearning",
-    "artificialintelligence",
+    "machine learning",
+    "artificial intelligence",
     "react",
+    "javascript",
   ];
 
-  function preprocess(text) {
-    return text
-      .toLowerCase()
-      .replace(/[^\w\s]/g, "")
-      .split(/\s+/)
-      .map((word) => synonyms[word] || word)
-      .filter((word) => !stopWords.includes(word));
-  }
+  let matchCount = 0;
 
-  const resumeWords = preprocess(resume);
-  const jobWords = preprocess(job);
-
-  const resumeSet = new Set(resumeWords);
-
-  let matchScore = 0;
-
-  jobWords.forEach((word) => {
-    if (resumeSet.has(word)) {
-      matchScore += importantSkills.includes(word) ? 2 : 1;
+  importantSkills.forEach((skill) => {
+    if (resumeText.includes(skill)) {
+      matchCount++;
     }
   });
-  if (jobWords.length === 0) return 0;
-  console.log("Resume Words:", resumeWords);
-  console.log("Job Words:", jobWords);
-  return Math.floor((matchScore / jobWords.length) * 100);
+
+  const score = (matchCount / importantSkills.length) * 100;
+
+  return Math.round(score);
 }
 
 app.listen(5000, () => {
